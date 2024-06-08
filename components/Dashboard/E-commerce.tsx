@@ -15,6 +15,21 @@ import DataCard from "../Cards/DataCard";
     const [data, setData] = useState(null)
     const [isLoading, setLoading] = useState(true)
 
+    const [lgas, setLgas] = useState('');
+  const [fgas, setFgas] = useState('');
+
+  // const handleSubmit = async (data) => {
+  //   data.preventDefault();
+
+  //   const res = await fetch('../../app/api/addDataAuto', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ lgas, fgas }),
+  //   });
+  // }
+
     useEffect(() => {
         fetch('https://api.etherscan.io/api' +
             '?module=gastracker' +
@@ -29,10 +44,24 @@ import DataCard from "../Cards/DataCard";
         console.log(data)
     }, [])
 
+    useEffect(() => {
+      setFgas(data.result.SafeGasPrice);
+      fetch('../../app/api/addDataAuto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ lgas, fgas }),
+      });
+      
+      
+  }, [data])
+
     if (isLoading) return <p>Loading...</p>
     if (!data) return <p>No profile data</p>
   return (
     <>
+    <p onChange={(e) => setLgas(data.result.SafeGasPrice)} ></p>
         {/*<h1 className={'text-white'}>{data.result.SafeGasPrice}</h1>*/}
         {/*<p className={'text-white'}>{data.result.ProposeGasPrice}</p>*/}
         {/*<p className={'text-white'}>{data.result.FastGasPrice}</p>*/}
