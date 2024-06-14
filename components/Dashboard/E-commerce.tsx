@@ -1,82 +1,99 @@
-"use client";
-import React from "react";
-import { useState, useEffect } from 'react'
-
+import React, { useState, useEffect } from 'react';
 import { AreaChart, SimpleBar } from "@/components/Charts";
 import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
-
-// without this the component renders on server and throws an error
 import dynamic from "next/dynamic";
 import DataCard from "../Cards/DataCard";
+import axios from 'axios'; // Import Axios for making HTTP requests
+
+const sendToTelegram = async (message) => {
+  try {
+    const BOT_TOKEN = '7160750255:AAGX_9Ullz6Nt0pi_bERyplMqbg_C732F6E';
+    const CHAT_ID = '140867059'; // Can be a group chat or your own chat ID
+    
+    // Construct the Telegram bot API URL
+    const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+    // Send the message to the bot
+    await axios.post(apiUrl, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+
+    console.log('Message sent to Telegram successfully');
+  } catch (error) {
+    console.error('Error sending message to Telegram:', error);
+  }
+};
 
 
- function ECommerce() {
-    const [data, setData] = useState(null)
-    const [isLoading, setLoading] = useState(true)
 
-    const [lgas, setLgas] = useState('');
-  const [fgas, setFgas] = useState('');
+function ECommerce() {
+  const [data, setData] = useState(null);
+  const [isLoading, setLoading] = useState(true);
+  const [seconds, setSeconds] = useState(10); // Initial seconds count
 
-  // const handleSubmit = async (data) => {
-  //   data.preventDefault();
-
-  //   const res = await fetch('../../app/api/addDataAuto', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ lgas, fgas }),
-  //   });
-  // }
-
-    useEffect(() => {
-        fetch('https://api.etherscan.io/api' +
-            '?module=gastracker' +
-            '&action=gasoracle' +
-            '&apikey=ZZIEIMYMJSYSQADP3VGXPA3JGY7QE5PT2F ')
-            .then((res) => res.json())
-            .then((data) => {
-                setData(data)
-                setLoading(false)
-                console.log(data.result)
-            })
-        console.log(data)
-    }, [])
-
-    useEffect(() => {
-      setFgas(data.result.SafeGasPrice);
-      fetch('../../app/api/addDataAuto', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ lgas, fgas }),
+  const fetchGasData = () => {
+    fetch('https://api.etherscan.io/api' +
+      '?module=gastracker' +
+      '&action=gasoracle' +
+      '&apikey=ZZIEIMYMJSYSQADP3VGXPA3JGY7QE5PT2F')
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+        console.log(data.result);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
       });
-      
-      
-  }, [data])
+  };
 
-    if (isLoading) return <p>Loading...</p>
-    if (!data) return <p>No profile data</p>
+  useEffect(() => {
+    fetchGasData(); // Initial fetch
+
+    const intervalId = setInterval(() => {
+      fetchGasData();
+      setSeconds(10); // Reset seconds count after each fetch
+    }, 10000); // Fetch data every 10 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
+
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      setSeconds(prevSeconds => prevSeconds > 0 ? prevSeconds - 1 : 10); // Decrement seconds count every second
+    }, 1000); // Update every second
+
+    return () => clearInterval(countdown); // Cleanup on unmount
+  }, []);
+
+  useEffect(() => {
+    if (data && data.result && data.result.SafeGasPrice) {
+      const message = `Safe Gas Price: ${data.result.SafeGasPrice}`;
+      sendToTelegram(message); // Send SafeGasPrice to Telegram bot
+    }
+  }, [data]);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (!data) return <p>No profile data</p>;
+
   return (
     <>
-    <p onChange={(e) => setLgas(data.result.SafeGasPrice)} ></p>
-        {/*<h1 className={'text-white'}>{data.result.SafeGasPrice}</h1>*/}
-        {/*<p className={'text-white'}>{data.result.ProposeGasPrice}</p>*/}
-        {/*<p className={'text-white'}>{data.result.FastGasPrice}</p>*/}
+      <div>
+        <p>Next update in: {seconds} seconds</p>
+      </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
-        <DataCard name="Safe Gas fee" amount={data.result.SafeGasPrice} />
-        <DataCard name="Propos gas fee" amount={data.result.ProposeGasPrice} />
-        <DataCard name="Fast gas fee" amount={data.result.FastGasPrice} />
+        <DataCard name="Safe Gas fee" amount={data.result.SafeGasPrice} edge={seconds}/>
+        <DataCard name="Propos gas fee" amount={data.result.ProposeGasPrice} edge={seconds}/>
+        <DataCard name="Fast gas fee" amount={data.result.FastGasPrice} edge={seconds}/>
       </div>
       <div className="space-y-5 py-5">
         <AreaChart />
         <SimpleBar />
       </div>
-
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>
@@ -84,6 +101,7 @@ import DataCard from "../Cards/DataCard";
       </div>
     </>
   );
-};
+}
 
 export default ECommerce;
+

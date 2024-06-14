@@ -11,23 +11,23 @@ import { useEffect, useState } from 'react';
 // };
 
 export default function Home() {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
 
-  useEffect(() => {
-    fetch('/api/getData')
-      .then(response => response.json())
-      .then(data => setData(data));
-      console.log(data)
-  }, []);
-  console.log(data.map(x=>x._id));
+  // useEffect(() => {
+  //   fetch('/api/getData')
+  //     .then(response => response.json())
+  //     .then(data => setData(data));
+  //     console.log(data)
+  // }, []);
+  // console.log(data.map(x=>x._id));
   return (
     <>
     
-    <ul>
+    {/* <ul>
         {data.map(x => (
           <li >{x._id}</li>
         ))}
-      </ul>
+      </ul> */}
       <ECommerce />
     </>
   );

@@ -11,25 +11,26 @@ import React from "react";
 type Props = {
   name: string;
   amount: number;
+  edge: number
 };
 
 const DataCard = (props: Props) => {
-  const { name, amount } = props;
+  const { name, amount , edge} = props;
   return (
     <div>
       <Card className="mx-auto max-w-lg">
         <Flex alignItems="start">
           <div>
             <Text>{name}</Text>
-            <Metric>$ {amount}</Metric>
+            <Metric>{amount}</Metric>
           </div>
-          <BadgeDelta deltaType="moderateIncrease">13.2%</BadgeDelta>
+          <BadgeDelta deltaType="moderateIncrease">{edge}</BadgeDelta>
         </Flex>
         <Flex className="mt-4">
-          <Text className="truncate">68% ($ 149,940)</Text>
-          <Text>$ 220,500</Text>
+          <Text className="truncate">Low</Text>
+          <Text>High</Text>
         </Flex>
-        <ProgressBar value={15.9} className="mt-2" />
+        <ProgressBar value={(amount/100)*100} className="mt-2" />
       </Card>
     </div>
   );
