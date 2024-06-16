@@ -9,7 +9,7 @@ const Home = () => {
     fetch('/api/getData')
       .then(response => response.json())
       .then(data => {
-        const formattedData = data.map(item => ({
+        const formattedData = data.map((item: any) => ({
           date: item.date,
           FastGasPrice: parseFloat(item.fgas),
           SafeGasPrice: parseFloat(item.lgas),
@@ -29,11 +29,11 @@ const Home = () => {
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
-  const valueFormatter = number => {
+  const valueFormatter = (number: any )=> {
     return new Intl.NumberFormat('us').format(number).toString();
   };
 
-  const handleDataPointsChange = (event) => {
+  const handleDataPointsChange = (event: any) => {
     setDataPoints(parseInt(event.target.value, 10));
   };
 

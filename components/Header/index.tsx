@@ -6,12 +6,38 @@ import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 import { MenuIcon } from "lucide-react";
 import { useSidebar } from "@/components/Sidebar/use-sidebar";
+import { useEffect, useState } from "react";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
   const { toggleSidebar, isSidebarOpen } = useSidebar((state) => state);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ name: "", url: "", title: "" });
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const response = await fetch("/api/status", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.error("log in 12e", data , data.name);
+          setIsLoggedIn(data.isLoggedIn);
+          setUser({ name: data.name, url: data.url, title: data.title });
+        }
+      } catch (err) {
+        console.error("Failed to fetch login status", err);
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
@@ -90,7 +116,12 @@ const Header = (props: {
           </ul>
 
           {/* <!-- User Area --> */}
-          <DropdownUser />
+          <DropdownUser
+            isLoggedIn={true}
+            name={user.name}
+            url={user.url}
+            title={user.title}
+          />
           {/* <!-- User Area --> */}
         </div>
       </div>

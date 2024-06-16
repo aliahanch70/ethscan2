@@ -40,7 +40,7 @@ const Sidebar = ({}: SidebarProps) => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
       if (window.innerWidth > 768) {
-        toggleSidebar(false); // Ensure sidebar is closed on larger screens
+        toggleSidebar(); // Ensure sidebar is closed on larger screens
       }
     };
 
@@ -51,7 +51,7 @@ const Sidebar = ({}: SidebarProps) => {
   }, [toggleSidebar]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: any) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         if (isSidebarOpen) {
           toggleSidebar();
@@ -68,7 +68,7 @@ const Sidebar = ({}: SidebarProps) => {
   useEffect(() => {
     // Hide sidebar on page load for mobile devices
     if (isMobile) {
-      toggleSidebar(false);
+      toggleSidebar();
     }
   }, [isMobile, toggleSidebar]);
 

@@ -6,25 +6,25 @@ import dynamic from "next/dynamic";
 import DataCard from "../Cards/DataCard";
 import axios from 'axios'; // Import Axios for making HTTP requests
 
-const sendToTelegram = async (message) => {
-  try {
-    const BOT_TOKEN = '7160750255:AAGX_9Ullz6Nt0pi_bERyplMqbg_C732F6E';
-    const CHAT_ID = '140867059'; // Can be a group chat or your own chat ID
+// const sendToTelegram = async (message: any) => {
+//   try {
+//     const BOT_TOKEN = '7160750255:AAGX_9Ullz6Nt0pi_bERyplMqbg_C732F6E';
+//     const CHAT_ID = '140867059'; // Can be a group chat or your own chat ID
     
-    // Construct the Telegram bot API URL
-    const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+//     // Construct the Telegram bot API URL
+//     const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-    // Send the message to the bot
-    await axios.post(apiUrl, {
-      chat_id: CHAT_ID,
-      text: message,
-    });
+//     // Send the message to the bot
+//     await axios.post(apiUrl, {
+//       chat_id: CHAT_ID,
+//       text: message,
+//     });
 
-    console.log('Message sent to Telegram successfully');
-  } catch (error) {
-    console.error('Error sending message to Telegram:', error);
-  }
-};
+//     console.log('Message sent to Telegram successfully');
+//   } catch (error) {
+//     console.error('Error sending message to Telegram:', error);
+//   }
+// };
 
 
 
@@ -69,12 +69,12 @@ function ECommerce() {
     return () => clearInterval(countdown); // Cleanup on unmount
   }, []);
 
-  useEffect(() => {
-    if (data && data.result && data.result.SafeGasPrice) {
-      const message = `Safe Gas Price: ${data.result.SafeGasPrice}`;
-      sendToTelegram(message); // Send SafeGasPrice to Telegram bot
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data && data.result && data.result.SafeGasPrice) {
+  //     const message = `Safe Gas Price: ${data.result.SafeGasPrice}`;
+  //     sendToTelegram(message); // Send SafeGasPrice to Telegram bot
+  //   }
+  // }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>No profile data</p>;
