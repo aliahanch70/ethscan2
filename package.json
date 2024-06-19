@@ -36,6 +36,7 @@
     "postcss": "8.4.27",
     "react": "latest",
     "react-apexcharts": "^1.4.1",
+    "react-crypto-icons": "^1.0.5",
     "react-dom": "latest",
     "react-jvectormap": "^0.0.16",
     "tailwind-merge": "^2.0.0",

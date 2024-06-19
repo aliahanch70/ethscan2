@@ -30,7 +30,7 @@ const DataCard = (props: Props) => {
           <Text className="truncate">Low</Text>
           <Text>High</Text>
         </Flex>
-        <ProgressBar value={(amount/100)*100} className="mt-2" />
+        <ProgressBar value={(amount/100)*100*3} className="mt-2" />
       </Card>
     </div>
   );

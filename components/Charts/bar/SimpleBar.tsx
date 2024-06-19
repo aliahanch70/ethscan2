@@ -1,56 +1,81 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { BarChart, Card, Subtitle, Title } from "@tremor/react";
 
-const chartdata = [
-  {
-    name: "Amphibians",
-    "Number of threatened species": 2488,
-  },
-  {
-    name: "Birds",
-    "Number of threatened species": 1445,
-  },
-  {
-    name: "Crustaceans",
-    "Number of threatened species": 743,
-  },
-  {
-    name: "Ferns",
-    "Number of threatened species": 281,
-  },
-  {
-    name: "Arachnids",
-    "Number of threatened species": 251,
-  },
-  {
-    name: "Corals",
-    "Number of threatened species": 232,
-  },
-  {
-    name: "Algae",
-    "Number of threatened species": 98,
-  },
-];
+const fetchGasData = async () => {
+  try {
+    const response = await fetch('/api/getData');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching gas data:', error);
+    return [];
+  }
+};
 
-const valueFormatter = (number: number) =>
-  `$ ${new Intl.NumberFormat("us").format(number).toString()}`;
+const calculateAveragePgasPerDate = (data) => {
+  const datePgasMap = {};
 
-const SimpleBar = () => (
-  <Card>
-    <Title>Number of species threatened with extinction (2021)</Title>
-    <Subtitle>
-      The IUCN Red List has assessed only a small share of the total known
-      species in the world.
-    </Subtitle>
-    <BarChart
-      className="mt-6"
-      data={chartdata}
-      index="name"
-      categories={["Number of threatened species"]}
-      colors={["blue"]}
-      valueFormatter={valueFormatter}
-      yAxisWidth={48}
-    />
-  </Card>
-);
+  data.forEach(item => {
+    const { date, pgas } = item;
+    if (!datePgasMap[date]) {
+      datePgasMap[date] = { total: 0, count: 0 };
+    }
+    datePgasMap[date].total += parseFloat(pgas); // Ensure pgas is a number
+    datePgasMap[date].count += 1;
+  });
+
+  const chartData = Object.keys(datePgasMap).map(date => ({
+    date,
+    "Average Pgas": (datePgasMap[date].total / datePgasMap[date].count).toFixed(2)
+  }));
+
+  return chartData;
+};
+
+const valueFormatter = (number) => 
+  new Intl.NumberFormat("us").format(number).toString();
+
+const SimpleBar = () => {
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const gasData = await fetchGasData();
+      const processedData = calculateAveragePgasPerDate(gasData);
+      setChartData(processedData);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <Card>
+      <Title>Average Pgas per Date</Title>
+      <Subtitle>Displaying the average Pgas for each date.</Subtitle>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : chartData.length > 0 ? (
+        <BarChart
+          className="mt-6"
+          data={chartData}
+          index="date"
+          categories={["Average Pgas"]}
+          colors={["blue"]}
+          valueFormatter={valueFormatter}
+          yAxisWidth={48}
+        />
+      ) : (
+        <p>No data available</p>
+      )}
+    </Card>
+  );
+};
 
 export default SimpleBar;

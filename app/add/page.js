@@ -57,13 +57,17 @@ export default function Add() {
       const minutes = currentDate.getMinutes().toString().padStart(2, '0');
       const ampm = hours >= 12 ? 'PM' : 'AM';
       const formattedTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+      const day = currentDate.getDate().toString().padStart(2, '0');
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based in JavaScript
+      const year = currentDate.getFullYear();
+      const formattedDate = `${year}/${month}/${day}`;
       
       fetch('/api/addDataAuto', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ lgas, fgas, pgas, date: formattedTime }),
+        body: JSON.stringify({ lgas, fgas, pgas, time: formattedTime, date: formattedDate }),
       })
       .then((response) => response.json())
       .then((result) => {

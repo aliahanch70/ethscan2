@@ -10,7 +10,7 @@ const Home = () => {
       .then(response => response.json())
       .then(data => {
         const formattedData = data.map((item: any) => ({
-          date: item.date,
+          date: item.time,
           FastGasPrice: parseFloat(item.fgas),
           SafeGasPrice: parseFloat(item.lgas),
         }));
